@@ -6,8 +6,9 @@ run:
 
 docker.run:
 	docker build -t ${IMAGE_NAME} .
-	docker run --rm -d -p 8000:8000 \
+	docker run -d -p 8000:8000 \
 		--name ${CONTAINER_NAME}-server ${IMAGE_NAME}
 
-docker.stop:
+docker.remove:
 	docker stop ${CONTAINER_NAME}-server
+	docker rm ${CONTAINER_NAME}-server
