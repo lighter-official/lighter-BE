@@ -3,9 +3,9 @@ from fastapi import APIRouter
 router = APIRouter()
 
 @router.get("/")
-def send_echo_message():
+def say_hello():
     return {'msg': 'hello'}
 
 @router.post("/")
-def send_echo_message():
+def say_post_hello():
     return {'msg': 'post hello'}
