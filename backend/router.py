@@ -5,4 +5,4 @@ from examples import tutorial
 api_router = APIRouter()
 
 api_router.include_router(echo.router)
-api_router.include_router(tutorial.router)
+api_router.include_router(tutorial.router, prefix='/login', tags=['로그인'])
