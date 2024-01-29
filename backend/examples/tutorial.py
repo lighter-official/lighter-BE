@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import Depends, FastAPI, Header, Query, Request, HTTPException, status, APIRouter
 
+from backend.core.config.env import env
 from backend.fastapi_oauth_client import OAuthClient, oauth_client
 from backend.core.utils.jwt_token import generate_access_token
 
@@ -18,9 +19,9 @@ naver_client = OAuthClient(
 )
 
 kakao_client = OAuthClient(
-    client_id="your_client_id",
-    client_secret_id="your_client_secret_id",
-    redirect_uri="your_callback_uri",
+    client_id=env.KAKAO_CLIENT_ID,
+    client_secret_id=env.KAKAO_CLIENT_SECRET_ID,
+    redirect_uri="http://localhost:8000",
     authentication_uri="https://kauth.kakao.com/oauth",
     resource_uri="https://kapi.kakao.com/v2/user/me",
     verify_uri="https://kapi.kakao.com/v1/user/access_token_info",
@@ -54,7 +55,7 @@ async def kakao_login(code: str, state: Optional[str] = None):
     token_response = await kakao_client.get_tokens(code, state)
     user_info = await kakao_client.get_user_info(access_token=token_response['access_token'])
     profile = user_info['properties']
-    access_token = generate_access_token(profile['nickname'],profile['thumbnail_image'])
+    access_token = generate_access_token(user_info['id'],profile['nickname'],profile['thumbnail_image'])
 
     return {
         'profile': profile,
