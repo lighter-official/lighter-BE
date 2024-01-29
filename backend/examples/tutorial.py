@@ -55,7 +55,7 @@ async def kakao_login(code: str, state: Optional[str] = None):
     token_response = await kakao_client.get_tokens(code, state)
     user_info = await kakao_client.get_user_info(access_token=token_response['access_token'])
     profile = user_info['properties']
-    access_token = generate_access_token(profile['nickname'],profile['thumbnail_image'])
+    access_token = generate_access_token(user_info['id'],profile['nickname'],profile['thumbnail_image'])
 
     return {
         'profile': profile,
