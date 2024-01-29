@@ -10,7 +10,6 @@ def generate_access_token(nickname, picture):
         'picture': picture,
     }
     encoded = jwt.encode(payload, "secret", algorithm="HS256")
-    jwt.decode(encoded, "secret", algorithms=["HS256"])
     return encoded
 
 if __name__ == '__main__':
