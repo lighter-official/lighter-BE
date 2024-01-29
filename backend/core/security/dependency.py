@@ -3,6 +3,8 @@ from jose.exceptions import JOSEError
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from backend.core.config.env import env
+
 security = HTTPBearer()
 
 async def has_access(credentials: HTTPAuthorizationCredentials= Depends(security)):
@@ -12,7 +14,7 @@ async def has_access(credentials: HTTPAuthorizationCredentials= Depends(security
     token = credentials.credentials
 
     try:
-        payload = jwt.decode(token, key='secret', options={"verify_signature": True,
+        payload = jwt.decode(token, key=env.JWT_SECRET, options={"verify_signature": True,
                                                            "verify_aud": False,
                                                            "verify_iss": False})
         return payload

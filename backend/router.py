@@ -11,7 +11,6 @@ api_router = APIRouter()
 
 # 비 로그인 api
 api_router.include_router(root.router)
-api_router.include_router(main.router)
 api_router.include_router(sample.router, prefix='/data')
 api_router.include_router(tutorial.router, prefix='/login', tags=['로그인'])
 

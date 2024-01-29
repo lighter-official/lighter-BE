@@ -2,6 +2,9 @@ from datetime import datetime, timezone
 
 import jwt
 
+from backend.core.config.env import env
+
+
 def generate_access_token(nickname, picture):
     payload = {
         'iss': 'Gloo',
@@ -9,7 +12,7 @@ def generate_access_token(nickname, picture):
         'nickname': nickname,
         'picture': picture,
     }
-    encoded = jwt.encode(payload, "secret", algorithm="HS256")
+    encoded = jwt.encode(payload, env.JWT_SECRET, algorithm="HS256")
     return encoded
 
 if __name__ == '__main__':

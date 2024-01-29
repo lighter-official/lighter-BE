@@ -3,11 +3,14 @@ from pymongo import settings
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
+from backend.core.config.env import env
+from backend.core.config.env import Settings
+
 router = APIRouter()
 
 @router.get("/")
 def data():
-    uri = ''
+    uri = env.DB_URI
 
     # Create a new client and connect to the server
     client = MongoClient(uri, server_api=ServerApi('1'))
