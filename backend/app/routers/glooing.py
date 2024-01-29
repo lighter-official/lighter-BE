@@ -11,7 +11,10 @@ router = APIRouter()
 @router.get("/set-up", response_model=Res)
 def set_up_writing(payload: dict = Depends(has_access)):
     result = writing_db.find_one({'user_id': payload['sub']})
-    return result
+    if result:
+        return result
+    else:
+        raise HTTPException(status_code=404, detail='데이터가 없습니다.')
 
 @router.post("/set-up")
 def set_up_writing(item: Item, payload: dict = Depends(has_access)):
