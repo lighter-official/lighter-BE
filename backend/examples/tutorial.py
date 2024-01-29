@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi import Depends, FastAPI, Header, Query, Request, HTTPException, status, APIRouter
 
 from backend.fastapi_oauth_client import OAuthClient, oauth_client
+from backend.core.utils.jwt_token import generate_access_token
 
 router = APIRouter()
 
@@ -48,13 +49,14 @@ async def login_required(
     if not await oauth_client.is_authenticated(access_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
-@router.get("/kakao")
-async def login(code: str, state: Optional[str] = None):
+@router.get("/kakao", description='카카오 소셜로그인 후 받은 code 로 유저정보와 Gloo 토큰 반환.  \n code 는 1회용인 것 같아요.  \n state 없어도 되네요.')
+async def kakao_login(code: str, state: Optional[str] = None):
     token_response = await kakao_client.get_tokens(code, state)
     user_info = await kakao_client.get_user_info(access_token=token_response['access_token'])
+    profile = user_info['properties']
+    access_token = generate_access_token(profile['nickname'],profile['thumbnail_image'])
 
     return {
-        'id': user_info['id'],
-        'profile': user_info['properties'],
-        'access_token': token_response
+        'profile': profile,
+        'access_token': access_token
     }

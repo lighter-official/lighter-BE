@@ -9,7 +9,7 @@ from backend.examples.tutorial import get_oauth_client
 import secrets
 
 def app() -> FastAPI:
-    app = FastAPI(title="Lighter app")
+    app = FastAPI(title="Gloo")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
