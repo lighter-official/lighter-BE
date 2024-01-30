@@ -38,3 +38,4 @@ class WritingRes:
     idx: int
     title: str
     desc: str
+    created_at: str

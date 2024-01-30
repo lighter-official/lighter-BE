@@ -78,7 +78,7 @@ def writings(id:str, payload: dict = Depends(has_access)):
     except:
         pass
     if w:
-        res = writing.WritingRes(w.get('idx'),w.get('title'),w.get('desc'))
+        res = writing.WritingRes(w.get('idx'),w.get('title'),w.get('desc'),datetime_to_str(w.get('created_at')))
         return res
     else:
         raise HTTPException(status_code=404, detail='데이터가 없습니다.')

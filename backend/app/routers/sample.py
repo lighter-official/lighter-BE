@@ -9,7 +9,7 @@ from backend.core.db.connect import sample_db
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("/", summary='DB 연결 확인')
 def data():
     data = sample_db.find_one()
 
