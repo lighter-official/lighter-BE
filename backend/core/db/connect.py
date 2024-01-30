@@ -20,5 +20,6 @@ except Exception as e:
 
 db = client["gloo"]
 sample_db = db["sample"]
+writing_setting_db = db["writing_setting"]
 writing_db = db["writing"]
 user_db = db["user"]

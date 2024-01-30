@@ -1,5 +1,5 @@
-IMAGE_NAME := lighter
-CONTAINER_NAME := lighter
+IMAGE_NAME := gloo
+CONTAINER_NAME := gloo
 
 run:
 	poetry run python backend/main.py
