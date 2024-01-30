@@ -50,7 +50,7 @@ async def login_required(
     if not await oauth_client.is_authenticated(access_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
-@router.get("/kakao", description='카카오 소셜로그인 후 받은 code 로 유저정보와 Gloo 토큰 반환.  \n code 는 1회용인 것 같아요.  \n state 없어도 되네요.')
+@router.get("/kakao", summary='로그인 후 Gloo 토큰 발급', description='카카오 소셜로그인 후 받은 code 로 유저정보와 Gloo 토큰 반환.  \n code 는 1회용인 것 같아요.  \n state 없어도 되네요.')
 async def kakao_login(code: str, state: Optional[str] = None):
     token_response = await kakao_client.get_tokens(code, state)
     user_info = await kakao_client.get_user_info(access_token=token_response['access_token'])
