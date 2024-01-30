@@ -103,7 +103,18 @@ def writings(req: writing.Writing, payload: dict = Depends(has_access)):
         'result': 'success',
     }
 
-@router.put("/writings", summary='수정')
-def writings(payload: dict = Depends(has_access)):
+@router.put("/writings/{id}", summary='수정')
+def writings(id:str, req: writing.Writing, payload: dict = Depends(has_access)):
+    update_data = asdict(req)
     user_id = payload['sub']
-    pass
+    update ={'$set': update_data}
+
+    result = None
+    try:
+        result = writing_db.find_one_and_update({'_id': ObjectId(id), 'user_id': user_id},update)
+    except:
+        pass
+    if result:
+        return {'result': 'success'}
+    else:
+        raise HTTPException(status_code=404, detail='데이터가 없습니다.')
