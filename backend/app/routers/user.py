@@ -11,7 +11,7 @@ from backend.examples.tutorial import get_authorization_token
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-@router.get("/my", tags=['로그인'], description='로그인 후 Gloo 에서 발행한 access token 을 헤더에 담아 정보를 반환')
+@router.get("/my", tags=['로그인'], summary='유저 정보', description='로그인 후 Gloo 에서 발행한 access token 을 헤더에 담아 정보를 반환')
 def profile(payload: dict = Depends(has_access)):
     return {
         'nickname': payload['nickname'],

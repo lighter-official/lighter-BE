@@ -3,6 +3,7 @@ from dataclasses import asdict
 from datetime import time
 import pytz
 from backend.core.utils.date_time import datetime_to_str, check_time_range
+from bson.objectid import ObjectId
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -56,6 +57,7 @@ def writings(payload: dict = Depends(has_access)):
 
             f = datetime_to_str(dt) # UTC datetime 을 한국시간 yyyymmdd 로 변환
             d['created_at'] = f
+            d.setdefault('id', str(w.get('_id')))
             writings.append(d)
         writings.sort(key=lambda x:x['idx'], reverse=True) # 글 최신순 정렬
         res.setdefault('writings', writings)
@@ -67,10 +69,19 @@ def writings(payload: dict = Depends(has_access)):
     else:
         raise HTTPException(status_code=404, detail='글쓰기 설정이 없습니다.')
 
-@router.get("/writings/id", summary='상세')
-def writings(payload: dict = Depends(has_access)):
+@router.get("/writings/{id}", summary='상세', response_model=writing.WritingRes)
+def writings(id:str, payload: dict = Depends(has_access)):
     user_id = payload['sub']
-    pass
+    w = None
+    try:
+        w = writing_db.find_one({'_id': ObjectId(id)})
+    except:
+        pass
+    if w:
+        res = writing.WritingRes(w.get('idx'),w.get('title'),w.get('desc'),datetime_to_str(w.get('created_at')))
+        return res
+    else:
+        raise HTTPException(status_code=404, detail='데이터가 없습니다.')
 
 @router.post("/writings", summary='글쓰기')
 def writings(req: writing.Writing, payload: dict = Depends(has_access)):
@@ -92,7 +103,18 @@ def writings(req: writing.Writing, payload: dict = Depends(has_access)):
         'result': 'success',
     }
 
-@router.put("/writings", summary='수정')
-def writings(payload: dict = Depends(has_access)):
+@router.put("/writings/{id}", summary='수정')
+def writings(id:str, req: writing.Writing, payload: dict = Depends(has_access)):
+    update_data = asdict(req)
     user_id = payload['sub']
-    pass
+    update ={'$set': update_data}
+
+    result = None
+    try:
+        result = writing_db.find_one_and_update({'_id': ObjectId(id), 'user_id': user_id},update)
+    except:
+        pass
+    if result:
+        return {'result': 'success'}
+    else:
+        raise HTTPException(status_code=404, detail='데이터가 없습니다.')
