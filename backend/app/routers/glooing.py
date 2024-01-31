@@ -2,9 +2,9 @@ import copy
 import datetime
 import re
 from dataclasses import asdict
-from datetime import time
+from datetime import time,timedelta
 import pytz
-from backend.core.utils.date_time import datetime_to_str, check_time_range, ampm_to_str, str_to_12hours, str_to_24hours, now
+from backend.core.utils.date_time import datetime_to_str, check_time_range, ampm_to_str, str_to_12hours, str_to_24hours, get_now, different_date,datetime_to_str_split
 from bson.objectid import ObjectId
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -13,7 +13,6 @@ from backend.app.models import writing_setting, writing
 from backend.core.db.connect import writing_db, writing_setting_db, my_badge_db, finished_writing_setting_db, finished_writing_db, badges_db
 from backend.core.security.dependency import has_access
 from backend.core.config import const
-#max_change_num, achieve_badges
 
 router = APIRouter()
 
@@ -38,6 +37,7 @@ def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_acces
 
     data.setdefault('user_id', user_id)
     data.setdefault('change_num', 0)
+    data.setdefault('created_at', get_now())
     data['start_time'] = ampm_to_str(item.start_time)
 
     exist = writing_setting_db.find_one({'user_id': user_id})
@@ -52,6 +52,8 @@ def writings(payload: dict = Depends(has_access)):
     user_id = payload['sub']
     writing_setting = writing_setting_db.find_one({'user_id': user_id})
     if writing_setting:
+        created_at = writing_setting.get('created_at')
+
         res = dict()
         res.setdefault('setting', copy.deepcopy(writing_setting))
         res.get('setting')['start_time'] = str_to_24hours(writing_setting.get('start_time'))
@@ -69,6 +71,9 @@ def writings(payload: dict = Depends(has_access)):
         res.setdefault('writings', writings)
         res.setdefault('can_write', check_time_range(writing_setting.get('start_time'), writing_setting.get('for_hours')))
         res.setdefault('total_writing', writing_db.count_documents({'user_id': user_id})) # 작성한 게시글 수
+        res.setdefault('start_date',datetime_to_str_split(created_at))
+        res.setdefault('end_date',datetime_to_str_split(created_at+timedelta(writing_setting.get('period'))))
+        res.setdefault('d_day', different_date(get_now(), created_at + timedelta(writing_setting.get('period'))))
 
         return res
 
@@ -191,7 +196,7 @@ def issue_badge(user_id: str,type: str, target: int|None=None) -> bool:
         my_badge_db.insert_one({
             'user_id': user_id,
             'badge_id': id,
-            'created_at': now()
+            'created_at': get_now()
         })
         return True
     return False
