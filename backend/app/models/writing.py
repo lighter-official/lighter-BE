@@ -39,3 +39,9 @@ class WritingRes:
     title: str
     desc: str
     created_at: str
+
+@dataclass
+class WritingInsertRes:
+    idx: int = 0
+    achieve_rate: int|None = None
+    issued_badge: str|None = None
