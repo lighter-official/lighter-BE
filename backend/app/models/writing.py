@@ -12,7 +12,7 @@ class MainRes:
         subject: str
         period: int
         page: int
-        start_time: str
+        start_time: list
         for_hours: int
         change_num: int
     @dataclass
