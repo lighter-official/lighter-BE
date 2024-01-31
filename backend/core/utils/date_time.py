@@ -30,7 +30,7 @@ def check_time_range(start_time_str, duration_hours):
     return start_time <= current_time <= end_time
 
 def ampm_to_str(time: list) -> str:
-    ampm,hour,minute = time
+    ampm,hour,minute = str(time[0]),int(time[1]),int(time[2])
 
     try:
         if ampm == 'PM':
