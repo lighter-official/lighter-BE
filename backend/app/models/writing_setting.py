@@ -7,7 +7,7 @@ from backend.core.config.const import max_change_num
 class Item:
     subject: str
     period: int
-    page: int
+    page: int = field(metadata={'validate': lambda v:v>0})
     start_time: list
     for_hours: int
 
