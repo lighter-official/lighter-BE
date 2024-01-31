@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from router import api_router
+from router import api_router, ws_router
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -31,5 +31,6 @@ def app() -> FastAPI:
         return RedirectResponse(login_url)
 
     app.include_router(router=api_router, prefix="/api")
+    app.include_router(router=ws_router, prefix="/ws")
     return app
 

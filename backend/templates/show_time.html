@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WebSocket demo</title>
+    </head>
+    <body>
+        <h1>WebSocket Timer</h1>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <input type="text" id="messageText2" autocomplete="off"/>
+            <input type="text" id="messageText3" autocomplete="off"/>
+            <input type="text" id="messageText4" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <p id="timer"></p>
+        <p id="write_button"></p>
+        </ul>
+        <script>
+            var ws = new WebSocket("ws://localhost:8000/ws/timer/main");
+            ws.onmessage = function(event) {
+            const jsonData = JSON.parse(event.data);
+
+            // Access individual values from the JSON data
+            const remainingTime = jsonData.remaining_time;
+            const write_button_activated = jsonData.write_button_activated;
+
+            document.getElementById('timer').textContent = `Remaining Time: ${remainingTime}`;
+            document.getElementById('write_button').textContent = `Button activated: ${write_button_activated}`;
+
+            };
+            function sendMessage(event) {
+                var input = document.getElementById("messageText").value
+                var input2 = document.getElementById("messageText2").value
+                var input3 = document.getElementById("messageText3").value
+                var input4 = document.getElementById("messageText4").value
+
+                ws.send(input)
+                ws.send(input2)
+                ws.send(input3)
+                ws.send(input4)
+<!--                input.value = ''-->
+                event.preventDefault()
+            }
+        </script>
+
+        <script src="show_time.js"></script>
+    </body>
+</html>
