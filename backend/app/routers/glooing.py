@@ -47,6 +47,13 @@ def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_acces
     else:
         raise HTTPException(status_code=409, detail='이미 글쓰기 설정이 있습니다.')
 
+@router.delete("/set-up", summary='글쓰기 설정 삭제')
+def delete_writing_setting(payload: dict = Depends(has_access)):
+    user_id = payload['sub']
+    writing_setting_db.delete_one({'user_id': user_id})
+    writing_db.delete_many({'user_id': user_id})
+    return {'result': 'success'}
+
 @router.get("/writings", summary='메인', response_model=writing.MainRes)
 def writings(payload: dict = Depends(has_access)):
     user_id = payload['sub']
