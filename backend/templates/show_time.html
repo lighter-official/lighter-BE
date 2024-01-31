@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WebSocket demo</title>
+    </head>
+    <body>
+        <h1>WebSocket Timer</h1>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <p id="timer"></p>
+<!--        <ul id='messages'>-->
+        </ul>
+        <script>
+            var ws = new WebSocket("ws://localhost:8000/ws/glooing/timer");
+            ws.onmessage = function(event) {
+    var timer = document.getElementById('timer'); // Replace 'your-p-tag-id' with the actual ID of your <p> tag
+
+    // Update the content of the <p> tag with the received WebSocket message
+    timer.textContent = event.data;
+
+            };
+            function sendMessage(event) {
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+        </script>
+
+        <script src="show_time.js"></script>
+    </body>
+</html>

@@ -1,5 +1,6 @@
 import datetime
 import pytz
+from fastapi import HTTPException
 
 korea_timezone = pytz.timezone('Asia/Seoul')
 
@@ -55,6 +56,9 @@ def str_to_24hours(time: str) -> list:
 
 def get_now():
     return datetime.datetime.now(tz=datetime.timezone.utc)
+
+def kr_now():
+    return datetime.datetime.now(datetime.UTC).replace(tzinfo=pytz.utc).astimezone(korea_timezone)
 
 def different_date(dt1: datetime, dt2: datetime) -> str:
     a = dt1.date()
