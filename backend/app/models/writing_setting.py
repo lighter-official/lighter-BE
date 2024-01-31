@@ -8,7 +8,7 @@ class Item:
     subject: str
     period: int
     page: int
-    start_time: str
+    start_time: list
     for_hours: int
 
 @dataclass
@@ -16,5 +16,5 @@ class Res:
     subject: str
     period: int
     page: int
-    start_time: str
+    start_time: list
     for_hours: int
