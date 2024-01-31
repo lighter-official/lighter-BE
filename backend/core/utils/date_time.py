@@ -24,3 +24,31 @@ def check_time_range(start_time_str, duration_hours):
     # 현재 시간이 범위 내에 있는지 확인
     return start_time <= current_time <= end_time
 
+def ampm_to_str(time: list) -> str:
+    ampm,hour,minute = time
+
+    try:
+        if ampm == 'PM':
+            hour += 12
+        h = str(hour).rjust(2,'0')
+        m = str(minute).rjust(2,'0')
+        return f'{h}{m}'
+    except:
+        raise HTTPException(status_code=400, detail='["AM",3,30] format 이 아닙니다.')
+
+def str_to_12hours(time: str) -> list:
+    hour,minute = int(time[:2]),int(time[2:])
+    ampm = 'AM'
+
+    if hour >= 12:
+        ampm = 'PM'
+        hour -= 12
+
+    return [ampm,hour,minute]
+def str_to_24hours(time: str) -> list:
+    hour,minute = int(time[:2]),int(time[2:])
+    return [hour,minute]
+
+if __name__ == '__main__':
+    print(str_to_12hours('1730'))
+    # print(ampm_to_str(['PM',11,5]))

@@ -1,8 +1,9 @@
+import copy
 import datetime
 from dataclasses import asdict
 from datetime import time
 import pytz
-from backend.core.utils.date_time import datetime_to_str, check_time_range
+from backend.core.utils.date_time import datetime_to_str, check_time_range, ampm_to_str, str_to_12hours, str_to_24hours
 from bson.objectid import ObjectId
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -17,6 +18,7 @@ router = APIRouter()
 @router.get("/set-up", response_model=writing_setting.Res)
 def writing_config(payload: dict = Depends(has_access)):
     result = writing_setting_db.find_one({'user_id': payload['sub']})
+    result['start_time'] = str_to_24hours(result.get('start_time'))
     if result:
         return result
     else:
@@ -24,8 +26,8 @@ def writing_config(payload: dict = Depends(has_access)):
 
 @router.post("/set-up", summary='글쓰기 설정')
 def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_access)):
-    if len(item.start_time) != 4 or not item.start_time.isdigit():
-        raise HTTPException(status_code=400, detail='start_time 이 네자리가 아니거나, 숫자가 아닙니다.')
+    if len(item.start_time) != 3:
+        raise HTTPException(status_code=400, detail='start_time 이 ["AM",3,30] format 이 아닙니다.')
 
     item.subject = item.subject.strip()
     item.subject = item.subject.replace('  ', ' ')
@@ -34,6 +36,7 @@ def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_acces
 
     data.setdefault('user_id', user_id)
     data.setdefault('change_num', 0)
+    data['start_time'] = ampm_to_str(item.start_time)
 
     exist = writing_setting_db.find_one({'user_id': user_id})
     if not exist:
@@ -48,7 +51,8 @@ def writings(payload: dict = Depends(has_access)):
     writing_setting = writing_setting_db.find_one({'user_id': user_id})
     if writing_setting:
         res = dict()
-        res.setdefault('setting', writing_setting)
+        res.setdefault('setting', copy.deepcopy(writing_setting))
+        res.get('setting')['start_time'] = str_to_24hours(writing_setting.get('start_time'))
 
         writings = []
         for w in writing_db.find({'user_id': user_id}):
