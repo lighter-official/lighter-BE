@@ -4,15 +4,16 @@ import re
 from dataclasses import asdict
 from datetime import time
 import pytz
-from backend.core.utils.date_time import datetime_to_str, check_time_range, ampm_to_str, str_to_12hours, str_to_24hours
+from backend.core.utils.date_time import datetime_to_str, check_time_range, ampm_to_str, str_to_12hours, str_to_24hours, now
 from bson.objectid import ObjectId
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from backend.app.models import writing_setting, writing, badge
-from backend.core.db.connect import writing_db, writing_setting_db, badge_db, finished_writing_setting_db, finished_writing_db
+from backend.app.models import writing_setting, writing
+from backend.core.db.connect import writing_db, writing_setting_db, my_badge_db, finished_writing_setting_db, finished_writing_db, badges_db
 from backend.core.security.dependency import has_access
-from backend.core.config.const import max_change_num, achieve_badges
+from backend.core.config import const
+#max_change_num, achieve_badges
 
 router = APIRouter()
 
@@ -117,8 +118,8 @@ def writings(req: writing.Writing, payload: dict = Depends(has_access)):
     achieve_rate = round((idx/target_writing)*100) # 달성률
 
     # 달성률 체크 및 뱃지 발급
-    for i in range(len(achieve_badges) - 1, -1, -1):
-        target = achieve_badges[i]
+    for i in range(len(const.achieve_badges) - 1, -1, -1):
+        target = const.achieve_badges[i]
         if achieve_rate >= target:
             badge_issued = issue_badge(user_id, 'achievement', target)
             if badge_issued:
@@ -184,8 +185,13 @@ def issue_badge(user_id: str,type: str, target: int|None=None) -> bool:
     else:
         badge_type = type
 
-    exist = badge_db.find_one({'user_id': user_id, 'type': badge_type})
+    id = badges_db.find_one({'type': badge_type}).get('_id')
+    exist = my_badge_db.find_one({'user_id': user_id, 'badge_id': id})
     if not exist:
-        badge_db.insert_one(asdict(badge.Badge(user_id,badge_type)))
+        my_badge_db.insert_one({
+            'user_id': user_id,
+            'badge_id': id,
+            'created_at': now()
+        })
         return True
     return False
