@@ -2,6 +2,7 @@ import datetime
 import pytz
 from datetime import datetime, timedelta
 from datetime import datetime, timedelta, time
+import datetime
 
 korea_timezone = pytz.timezone('Asia/Seoul')
 
@@ -48,6 +49,9 @@ def str_to_12hours(time: str) -> list:
 def str_to_24hours(time: str) -> list:
     hour,minute = int(time[:2]),int(time[2:])
     return [hour,minute]
+
+def now():
+    return datetime.datetime.now(tz=datetime.timezone.utc)
 
 if __name__ == '__main__':
     print(str_to_12hours('1730'))
