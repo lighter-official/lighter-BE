@@ -1,6 +1,7 @@
 import datetime
 import pytz
 from fastapi import HTTPException
+from backend.core import utils
 
 korea_timezone = pytz.timezone('Asia/Seoul')
 
@@ -25,6 +26,23 @@ def check_time_range(start_time_str: str, duration_hours: int) -> bool:
     # 종료 시간 계산
     end_time = (datetime.datetime.combine(datetime.datetime.today(), start_time) +
                 datetime.timedelta(hours=duration_hours)).time()
+
+    # 현재 시간이 범위 내에 있는지 확인
+    return start_time <= current_time <= end_time
+
+def check_time_range_kr(start_time_str: str, duration_hours: int) -> bool:
+    current_datetime = utils.date_time.kr_now()
+    print(current_datetime)
+    current_time = current_datetime.time()
+    # 입력된 문자열 형태의 시간을 datetime 객체로 변환
+    start_time = datetime.datetime.strptime(start_time_str, "%H%M").time()
+    print(datetime.datetime.today())
+    print(utils.date_time.kr_now().date())
+    print(datetime.datetime.combine(datetime.datetime.today(), start_time))
+    # 종료 시간 계산
+    end_time = (datetime.datetime.combine(datetime.datetime.today(), start_time) +
+                datetime.timedelta(hours=duration_hours)).time()
+    print(f'end_time={end_time}')
 
     # 현재 시간이 범위 내에 있는지 확인
     return start_time <= current_time <= end_time

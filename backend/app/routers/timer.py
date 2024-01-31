@@ -67,3 +67,45 @@ async def timer(websocket: WebSocket):
 
         await websocket.send_text(json_data) # Send formatted remaining time to the frontend
         await asyncio.sleep(1)
+
+@router.websocket('/writing')
+async def timer(websocket: WebSocket):
+    await websocket.accept()
+    ampm = await websocket.receive_text()
+    h = await websocket.receive_text()
+    m = await websocket.receive_text()
+    for_hours = await websocket.receive_text()
+    time_str = utils.date_time.ampm_to_str([ampm,h,m])
+    print(time_str)
+
+    target_hour = int(time_str[:2])
+    target_minute = int(time_str[2:])
+    current_time = utils.date_time.kr_now()
+    target_time = current_time.replace(hour=target_hour, minute=target_minute, second=0, microsecond=0)
+    text_red = False
+
+    # 글쓰기 시간일 때
+    while utils.date_time.check_time_range_kr(time_str,int(for_hours)):
+        current_time = utils.date_time.kr_now()
+
+        end_time = target_time + datetime.timedelta(hours=int(for_hours))
+
+        remaining_time = end_time - current_time
+        hours, remainder = divmod(remaining_time.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        remaining_time_str = f"{hours:02}:{minutes:02}:{seconds:02}" # Format remaining time as hh:mm:ss
+
+        if remaining_time.total_seconds() <= 600:  # 10 minutes = 600 seconds
+            text_red = True
+
+        data_to_send = {
+            'remaining_time': remaining_time_str,
+            'text_red': text_red
+        }
+
+        json_data = json.dumps(data_to_send) # Convert the dictionary to a JSON string
+        print(json_data)
+
+        await websocket.send_text(json_data) # Send formatted remaining time to the frontend
+        await asyncio.sleep(1)
