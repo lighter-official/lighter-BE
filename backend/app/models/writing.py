@@ -26,6 +26,9 @@ class MainRes:
     writings: list[Writing]
     can_write: bool
     total_writing: int
+    start_date: str
+    end_date: str
+    d_day: str
     max_change_num: int = max_change_num
 
 @dataclass
