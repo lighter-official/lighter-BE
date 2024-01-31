@@ -16,7 +16,7 @@ def datetime_to_str_split(dt: datetime, split: str|None=None) -> str:
     formatted_date = korea_now.strftime(f'%Y{split}%m{split}%d') # yyyymmdd 형식의 문자열로 변환
     return formatted_date
 
-def check_time_range(start_time_str, duration_hours):
+def check_time_range(start_time_str: str, duration_hours: int) -> bool:
     current_datetime = datetime.datetime.now()
     current_time = current_datetime.time()
     # 입력된 문자열 형태의 시간을 datetime 객체로 변환
