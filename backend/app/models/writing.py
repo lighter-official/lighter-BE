@@ -4,6 +4,7 @@ from typing import Union
 from backend.core.config.const import max_change_num
 from bson.objectid import ObjectId
 from pydantic import Field, BaseConfig
+from pydantic import BaseModel
 
 @dataclass
 class MainRes:
@@ -20,6 +21,7 @@ class MainRes:
         id: str
         idx: int
         title: str
+        desc: str
         created_at: list
 
     setting: Setting
@@ -31,10 +33,9 @@ class MainRes:
     d_day: str
     max_change_num: int = max_change_num
 
-@dataclass
-class Writing:
-    title: str
-    desc: str
+class Writing(BaseModel):
+    title: str|None=None
+    desc: str|None=None
 
 @dataclass
 class WritingRes:

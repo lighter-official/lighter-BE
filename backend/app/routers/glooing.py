@@ -179,9 +179,10 @@ def writings(req: writing.Writing, payload: dict = Depends(has_access)):
 
     return res
 
-@router.put("/writings/{id}", summary='수정')
+@router.patch("/writings/{id}", summary='수정')
 def writings(id:str, req: writing.Writing, payload: dict = Depends(has_access)):
-    update_data = asdict(req)
+    update_data = req.dict(exclude_unset=True)
+
     user_id = payload['sub']
     update ={'$set': update_data}
 
