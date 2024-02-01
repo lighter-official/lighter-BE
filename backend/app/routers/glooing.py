@@ -4,7 +4,8 @@ import re
 from dataclasses import asdict
 from datetime import time,timedelta
 import pytz
-from backend.core.utils.date_time import datetime_to_str, check_time_range, ampm_to_str, str_to_12hours, str_to_24hours, get_now, different_date,datetime_to_str_split
+from backend.core.utils.date_time import datetime_to_str, check_time_range, ampm_to_str, str_to_12hours, str_to_24hours, \
+    get_now, different_date, datetime_to_str_kr, datetime_to_list
 from bson.objectid import ObjectId
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -16,14 +17,16 @@ from backend.core.config import const
 
 router = APIRouter()
 
-@router.get("/set-up", response_model=writing_setting.Res)
-def writing_config(payload: dict = Depends(has_access)):
-    result = writing_setting_db.find_one({'user_id': payload['sub']})
-    result['start_time'] = str_to_24hours(result.get('start_time'))
-    if result:
-        return result
-    else:
-        raise HTTPException(status_code=404, detail='데이터가 없습니다.')
+# @router.get("/set-up", response_model=writing_setting.Res, summary='글쓰기 설정 확인 테스트용')
+# def writing_config(payload: dict = Depends(has_access)):
+#     result = writing_setting_db.find_one({'user_id': payload['sub']})
+#     if not result:
+#         raise HTTPException(status_code=404, detail='데이터가 없습니다.')
+#     result['start_time'] = str_to_24hours(result.get('start_time'))
+#     if result:
+#         return result
+#     else:
+#         raise HTTPException(status_code=404, detail='데이터가 없습니다.')
 
 @router.post("/set-up", summary='글쓰기 설정')
 def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_access)):
@@ -70,16 +73,15 @@ def writings(payload: dict = Depends(has_access)):
             d = dict(w)
             dt:datetime.datetime = d.get('created_at')
 
-            f = datetime_to_str(dt) # UTC datetime 을 한국시간 yyyymmdd 로 변환
-            d['created_at'] = f
+            d['created_at'] = datetime_to_list(dt) # UTC datetime 을 한국시간 yyyymmdd 로 변환
             d.setdefault('id', str(w.get('_id')))
             writings.append(d)
         writings.sort(key=lambda x:x['idx'], reverse=True) # 글 최신순 정렬
         res.setdefault('writings', writings)
         res.setdefault('can_write', check_time_range(writing_setting.get('start_time'), writing_setting.get('for_hours')))
         res.setdefault('total_writing', writing_db.count_documents({'user_id': user_id})) # 작성한 게시글 수
-        res.setdefault('start_date',datetime_to_str_split(created_at))
-        res.setdefault('end_date',datetime_to_str_split(created_at+timedelta(writing_setting.get('period'))))
+        res.setdefault('start_date',datetime_to_str_kr(created_at))
+        res.setdefault('end_date',datetime_to_str_kr(created_at+timedelta(writing_setting.get('period'))))
         res.setdefault('d_day', different_date(get_now(), created_at + timedelta(writing_setting.get('period'))))
 
         return res
@@ -126,7 +128,9 @@ def writings(req: writing.Writing, payload: dict = Depends(has_access)):
         badge_issued = issue_badge(user_id,'first-upload')
         if badge_issued:
             issued_badge = 'first-upload'
-
+    
+    if target_writing == 0:
+        raise HTTPException(status_code=409, detail='목표 페이지 수가 0 입니다.')
     achieve_rate = round((idx/target_writing)*100) # 달성률
 
     # 달성률 체크 및 뱃지 발급

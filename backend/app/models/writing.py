@@ -20,7 +20,7 @@ class MainRes:
         id: str
         idx: int
         title: str
-        created_at: str
+        created_at: list
 
     setting: Setting
     writings: list[Writing]

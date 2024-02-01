@@ -4,17 +4,29 @@ from fastapi import HTTPException
 from backend.core import utils
 
 korea_timezone = pytz.timezone('Asia/Seoul')
+days_en = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+days_kr = ['월','화','수','목','금','토','일']
 
 def datetime_to_str(dt: datetime) -> str:
     korea_now = dt.replace(tzinfo=pytz.utc).astimezone(korea_timezone) # UTC 시간을 한국 시간으로 변환
     formatted_date = korea_now.strftime('%Y.%m.%d') # yyyymmdd 형식의 문자열로 변환
     return formatted_date
 
+def datetime_to_list(dt: datetime) -> list:
+    dt_kr = dt.replace(tzinfo=pytz.utc).astimezone(korea_timezone) # UTC 시간을 한국 시간으로 변환
+    idx = days_en.index(dt_kr.strftime('%a'))
+    return [dt_kr.year, dt_kr.month, dt_kr.day, days_kr[idx]]
+
 def datetime_to_str_split(dt: datetime, split: str|None=None) -> str:
     if not split:
         split = '.'
     korea_now = dt.replace(tzinfo=pytz.utc).astimezone(korea_timezone) # UTC 시간을 한국 시간으로 변환
     formatted_date = korea_now.strftime(f'%Y{split}%m{split}%d') # yyyymmdd 형식의 문자열로 변환
+    return formatted_date
+
+def datetime_to_str_kr(dt: datetime) -> str:
+    korea_now = dt.replace(tzinfo=pytz.utc).astimezone(korea_timezone) # UTC 시간을 한국 시간으로 변환
+    formatted_date = korea_now.strftime(f'%Y년 %m월 %d일') # yyyymmdd 형식의 문자열로 변환
     return formatted_date
 
 def check_time_range(start_time_str: str, duration_hours: int) -> bool:
@@ -69,7 +81,7 @@ def str_to_12hours(time: str) -> list:
 
     return [ampm,hour,minute]
 def str_to_24hours(time: str) -> list:
-    hour,minute = int(time[:2]),int(time[2:])
+    hour,minute = time[:2],time[2:]
     return [hour,minute]
 
 def get_now():
