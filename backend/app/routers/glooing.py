@@ -14,6 +14,8 @@ from backend.app.models import writing_setting, writing
 from backend.core.db.connect import writing_db, writing_setting_db, my_badge_db, finished_writing_setting_db, finished_writing_db, badges_db
 from backend.core.security.dependency import has_access
 from backend.core.config import const
+import websockets
+from backend.app.routers.timer import websocket_connections
 
 router = APIRouter()
 
@@ -29,7 +31,7 @@ router = APIRouter()
 #         raise HTTPException(status_code=404, detail='데이터가 없습니다.')
 
 @router.post("/set-up", summary='글쓰기 설정')
-def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_access)):
+async def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_access)):
     if len(item.start_time) != 3:
         raise HTTPException(status_code=400, detail='start_time 이 ["AM",3,30] format 이 아닙니다.')
 
@@ -42,6 +44,13 @@ def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_acces
     data.setdefault('change_num', 0)
     data.setdefault('created_at', get_now())
     data['start_time'] = ampm_to_str(item.start_time)
+
+    for connection in websocket_connections:
+        await connection.send_text('AM')
+        await connection.send_text('3')
+        await connection.send_text('30')
+        await connection.send_text('1')
+    print('success')
 
     exist = writing_setting_db.find_one({'user_id': user_id})
     if not exist:
