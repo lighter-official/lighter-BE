@@ -15,7 +15,6 @@ from backend.core.db.connect import writing_db, writing_setting_db, my_badge_db,
 from backend.core.security.dependency import has_access
 from backend.core.config import const
 import websockets
-from backend.app.routers.timer import websocket_connections
 
 router = APIRouter()
 
