@@ -51,7 +51,8 @@ async def timer(websocket: WebSocket):
 
                 data_to_send = {
                     'remaining_time': remaining_time_str,
-                    'write_button_activated': False
+                    'write_button_activated': False,
+                    'text_red': False,
                 }
 
                 json_data = json.dumps(data_to_send) # Convert the dictionary to a JSON string
