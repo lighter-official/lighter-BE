@@ -1,2 +1,8 @@
 docker.run:
-    docker run -d -p 8000:8000 lighter0125/gloo:${v}
+    docker run -d --rm -p 8000:8000 --name server lighter0125/gloo:${v}
+
+docker.debug:
+    docker exec -it server /bin/bash
+
+docker.log:
+    docker logs server

@@ -1,6 +1,6 @@
 IMAGE_NAME := gloo
 CONTAINER_NAME := gloo
-VERSION := 0.1.2
+VERSION := 0.1.3
 
 run:
 	poetry run python backend/main.py
