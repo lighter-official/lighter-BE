@@ -12,6 +12,7 @@ websocket_connections = []
 async def timer(websocket: WebSocket):
     await websocket.accept()
     websocket_connections.append(websocket)
+    print('-----------------------')
     ampm = await websocket.receive_text()
     h = await websocket.receive_text()
     m = await websocket.receive_text()
