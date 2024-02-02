@@ -30,6 +30,7 @@ router = APIRouter()
 #     else:
 #         raise HTTPException(status_code=404, detail='데이터가 없습니다.')
 
+
 @router.post("/set-up", summary='글쓰기 설정')
 async def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has_access)):
     if len(item.start_time) != 3:
@@ -45,11 +46,6 @@ async def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has
     data.setdefault('created_at', get_now())
     data['start_time'] = ampm_to_str(item.start_time)
 
-    for connection in websocket_connections:
-        await connection.send_text('AM')
-        await connection.send_text('3')
-        await connection.send_text('30')
-        await connection.send_text('1')
     print('success')
 
     exist = writing_setting_db.find_one({'user_id': user_id})
@@ -67,10 +63,16 @@ def delete_writing_setting(payload: dict = Depends(has_access)):
     return {'result': 'success'}
 
 @router.get("/writings", summary='메인', response_model=writing.MainRes)
-def writings(payload: dict = Depends(has_access)):
+async def writings(payload: dict = Depends(has_access)):
     user_id = payload['sub']
     writing_setting = writing_setting_db.find_one({'user_id': user_id})
     if writing_setting:
+        for connection in websocket_connections:
+            await connection.send_text(writing_setting.get('AM'))
+            await connection.send_text('3')
+            await connection.send_text('30')
+            await connection.send_text('1')
+
         created_at = writing_setting.get('created_at')
 
         res = dict()
