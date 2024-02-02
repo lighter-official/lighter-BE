@@ -13,13 +13,17 @@ async def timer(websocket: WebSocket):
     await websocket.accept()
     websocket_connections.append(websocket)
     print('1------------------------')
-    ampm = await websocket.receive_text()
+    # ampm = await websocket.receive_text()
     print('2------------------------')
     h = await websocket.receive_text()
     print('3------------------------')
     m = await websocket.receive_text()
     print('4------------------------')
     for_hours = await websocket.receive_text()
+    ampm = 'AM'
+    if int(h) >= 12:
+        h = str(int(h) - 12)
+        ampm = 'PM'
     print(ampm,h,m,for_hours)
     time_str = utils.date_time.ampm_to_str([ampm,h,m])
 
