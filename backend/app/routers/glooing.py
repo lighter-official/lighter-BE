@@ -142,7 +142,7 @@ def writings(req: writing.Writing, payload: dict = Depends(has_access)):
                 issued_badge = f'achievement-{str(target)}'
 
     ## 2. 글 저장
-    data = asdict(req)
+    data = req.dict(exclude_unset=True)
     data.setdefault('idx',idx)
     data.setdefault('created_at',datetime.datetime.now(tz=datetime.timezone.utc))
     data.setdefault('writing_setting_id',setting_id)
