@@ -45,14 +45,14 @@ async def set_up_writing(item: writing_setting.Item, payload: dict = Depends(has
     data.setdefault('created_at', get_now())
     data['start_time'] = ampm_to_str(item.start_time)
 
-    print('success')
-
     exist = writing_setting_db.find_one({'user_id': user_id})
     if not exist:
         writing_setting_db.insert_one(data)
-        return {'result': 'success'}
+        return {'result': 'inserted'}
     else:
-        raise HTTPException(status_code=409, detail='이미 글쓰기 설정이 있습니다.')
+        writing_setting_db.update_one({'user_id': user_id},{'$set':data}) # 임시로 수정되게 수정
+        return {'result': 'updated'}
+        # raise HTTPException(status_code=409, detail='이미 글쓰기 설정이 있습니다.')
 
 @router.delete("/set-up", summary='글쓰기 설정 삭제')
 def delete_writing_setting(payload: dict = Depends(has_access)):
