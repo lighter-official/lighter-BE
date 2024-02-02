@@ -34,13 +34,15 @@ async def timer(websocket: WebSocket):
         # 글쓰기 시간 전
         if cur < start:
             remaining_time_str = remain_time_str(cur,start)
+            print('=============== 글쓰기 시간 전 ====================')
 
         else:
-            # 글쓰기 시간
+            # 글쓰기 시간 중
             if start <= cur <= end:
                 remaining_time = end - cur
                 remaining_time_str = remain_time_str(cur,end)
                 write_button_activated = True
+                print('=============== 글쓰기 시간 중 ====================')
 
                 if remaining_time.total_seconds() <= 600: # 10분 밖에 안 남았을 때
                     text_red = True
@@ -49,6 +51,7 @@ async def timer(websocket: WebSocket):
             else:
                 next_start = start + datetime.timedelta(days=1)
                 remaining_time_str = remain_time_str(cur,next_start)
+                print('=============== 글쓰기 시간이 지나 다음날을 기다림 ====================')
 
         data_to_send = {
             'remaining_time': remaining_time_str,
