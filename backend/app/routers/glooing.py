@@ -142,7 +142,7 @@ def writings(req: writing.Writing, payload: dict = Depends(has_access)):
                 issued_badge = f'achievement-{str(target)}'
 
     ## 2. 글 저장
-    data = asdict(req)
+    data = req.dict(exclude_unset=True)
     data.setdefault('idx',idx)
     data.setdefault('created_at',datetime.datetime.now(tz=datetime.timezone.utc))
     data.setdefault('writing_setting_id',setting_id)
@@ -179,9 +179,10 @@ def writings(req: writing.Writing, payload: dict = Depends(has_access)):
 
     return res
 
-@router.put("/writings/{id}", summary='수정')
+@router.patch("/writings/{id}", summary='수정')
 def writings(id:str, req: writing.Writing, payload: dict = Depends(has_access)):
-    update_data = asdict(req)
+    update_data = req.dict(exclude_unset=True)
+
     user_id = payload['sub']
     update ={'$set': update_data}
 
