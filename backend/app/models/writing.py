@@ -20,9 +20,9 @@ class MainRes:
     class Writing:
         id: str
         idx: int
-        title: str
-        desc: str
         created_at: list
+        title: str|None=None
+        desc: str|None=None
 
     setting: Setting
     writings: list[Writing]
