@@ -18,9 +18,16 @@ def remain_time_str(start: datetime, end: datetime) -> str:
 async def timer(websocket: WebSocket):
     await websocket.accept()
 
-    h: str = await websocket.receive_text() # hh
-    m: str = await websocket.receive_text() # mm
-    for_hours = await websocket.receive_text()
+    # JSON 형식으로 데이터 수신
+    data_received = await websocket.receive_text()
+
+    # JSON 문자열을 파싱하여 Python 객체로 변환
+    data_dict = json.loads(data_received)
+
+    # 데이터 사용
+    h = data_dict.get('h')
+    m = data_dict.get('m')
+    for_hours = data_dict.get('for_hours')
 
     cur = datetime.datetime.now()
     start = cur.replace(hour=int(h), minute=int(m), second=0, microsecond=0)
