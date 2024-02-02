@@ -31,6 +31,7 @@ async def timer(websocket: WebSocket):
     target_minute = int(time_str[2:])
     current_time = utils.date_time.kr_now()
     target_time = current_time.replace(hour=target_hour, minute=target_minute, second=0, microsecond=0)
+    text_red = False
 
     try:
         while True:
@@ -69,10 +70,13 @@ async def timer(websocket: WebSocket):
             minutes, seconds = divmod(remainder, 60)
 
             remaining_time_str = f"{hours:02}:{minutes:02}:{seconds:02}" # Format remaining time as hh:mm:ss
+            if remaining_time.total_seconds() <= 600:  # 10 minutes = 600 seconds
+                text_red = True
 
             data_to_send = {
                 'remaining_time': remaining_time_str,
-                'write_button_activated': True
+                'write_button_activated': True,
+                'text_red': text_red,
             }
 
             json_data = json.dumps(data_to_send) # Convert the dictionary to a JSON string
