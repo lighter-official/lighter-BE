@@ -67,12 +67,6 @@ async def writings(payload: dict = Depends(has_access)):
     user_id = payload['sub']
     writing_setting = writing_setting_db.find_one({'user_id': user_id})
     if writing_setting:
-        for connection in websocket_connections:
-            await connection.send_text(writing_setting.get('AM'))
-            await connection.send_text('3')
-            await connection.send_text('30')
-            await connection.send_text('1')
-
         created_at = writing_setting.get('created_at')
 
         res = dict()
