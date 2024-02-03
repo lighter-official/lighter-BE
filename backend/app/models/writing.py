@@ -14,7 +14,7 @@ class MainRes:
         period: int
         page: int
         start_time: list
-        for_hours: int
+        for_hours: list
         change_num: int
     @dataclass
     class Writing:
@@ -26,7 +26,7 @@ class MainRes:
 
     setting: Setting
     writings: list[Writing]
-    can_write: bool
+    # can_write: bool
     total_writing: int
     start_date: str
     end_date: str
