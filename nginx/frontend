@@ -4,15 +4,14 @@ events {
 }
 
 http {
-  server {
-    listen 3000;
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name ec2-3-107-29-248.ap-southeast-2.compute.amazonaws.com;
+        root /frontend/;
 
-    location / {
-      root /usr/share/nginx/html;
-
-      index index.html index.htm;
-
-      try_files $uri $uri/ /index.html;
+        location / {
+          proxy_pass http://ec2-3-107-29-248.ap-southeast-2.compute.amazonaws.com:3000;
+        }
     }
-  }
 }
