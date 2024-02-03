@@ -51,9 +51,14 @@ async def login_required(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 @router.get("/kakao", summary='로그인 후 Gloo 토큰 발급', description='카카오 소셜로그인 후 받은 code 로 유저정보와 Gloo 토큰 반환.  \n code 는 1회용인 것 같아요.  \n state 없어도 되네요.')
-async def kakao_login(code: str, state: Optional[str] = None):
-    token_response = await kakao_client.get_tokens(code, state)
-    user_info = await kakao_client.get_user_info(access_token=token_response['access_token'])
+def kakao_login(code: str, state: Optional[str] = None):
+    if code == '[object Object]':
+        return {
+        'profile': '',
+        'access_token': ''
+        }
+    access_token = kakao_client.get_token_from_kakao(code, state)
+    user_info = kakao_client.get_user_info(access_token)
     profile = user_info['properties']
     access_token = generate_access_token(user_info['id'],profile['nickname'],profile['thumbnail_image'])
 
