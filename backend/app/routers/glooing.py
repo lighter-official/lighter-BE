@@ -68,9 +68,12 @@ async def writings(payload: dict = Depends(has_access)):
     if writing_setting:
         created_at = writing_setting.get('created_at')
 
+        setting:dict = copy.deepcopy(writing_setting)
+        setting['for_hours'] =[str(setting['for_hours']),'00','00']
+        setting['start_time'] = str_to_24hours(writing_setting.get('start_time'))
+
         res = dict()
-        res.setdefault('setting', copy.deepcopy(writing_setting))
-        res.get('setting')['start_time'] = str_to_24hours(writing_setting.get('start_time'))
+        res.setdefault('setting', setting)
 
         writings = []
         for w in writing_db.find({'user_id': user_id}):
@@ -82,7 +85,7 @@ async def writings(payload: dict = Depends(has_access)):
             writings.append(d)
         writings.sort(key=lambda x:x['idx'], reverse=True) # 글 최신순 정렬
         res.setdefault('writings', writings)
-        res.setdefault('can_write', check_time_range(writing_setting.get('start_time'), writing_setting.get('for_hours')))
+        # res.setdefault('can_write', check_time_range(writing_setting.get('start_time'), writing_setting.get('for_hours')))
         res.setdefault('total_writing', writing_db.count_documents({'user_id': user_id})) # 작성한 게시글 수
         res.setdefault('start_date',datetime_to_str_kr(created_at))
         res.setdefault('end_date',datetime_to_str_kr(created_at+timedelta(writing_setting.get('period'))))
