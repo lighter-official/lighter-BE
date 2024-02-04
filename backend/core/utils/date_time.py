@@ -62,6 +62,12 @@ def check_time_range_kr(start_time_str: str, duration_hours: int) -> bool:
 def ampm_to_str(time: list) -> str:
     ampm,hour,minute = str(time[0]),int(time[1]),int(time[2])
 
+    if hour == 12: # 오후 12시를 낮 12시로
+        if ampm == 'AM':
+            ampm = 'PM'
+        else:
+            ampm = 'AM'
+
     try:
         if ampm == 'PM':
             hour += 12
