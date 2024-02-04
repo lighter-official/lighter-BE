@@ -1,5 +1,7 @@
+VERSION := 1.0
+
 docker.run:
-    docker run -d --rm -p 8000:8000 --name server lighter0125/gloo:${v}
+    docker run -d --rm -p 8000:8000 --name server-{VERSION} lighter0125/gloo:${VERSION}
 
 docker.debug:
     docker exec -it server /bin/bash
